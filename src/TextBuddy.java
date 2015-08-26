@@ -22,6 +22,9 @@ public class TextBuddy {
 		try {
 			BufferedWriter out = getWriter(fileName);
 			String input = getInput();
+			String cmd = getCommand(input);
+			
+			System.out.println(cmd);
 			out.write(input);
 			
 			out.close();
@@ -43,6 +46,16 @@ public class TextBuddy {
 	private static BufferedWriter getWriter(String[] fileName) throws IOException {
 		File file = new File(FILE_LOCATION + fileName[0] + FILE_FORMAT);
 		return new BufferedWriter(new FileWriter(file));
+	}
+	
+	private static String getCommand(String input) {
+		return getFirstWord(input);
+	}
+	
+	// Read first word as command keyword
+	private static String getFirstWord(String input) {
+		// split at white space
+		return input.trim().split("\\s")[0];
 	}
 	
 	
