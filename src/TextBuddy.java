@@ -2,49 +2,60 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.util.Scanner;
 
 public class TextBuddy {
 	
-	private static final String FILE_FORMAT = ".txt";
 	private static final String FILE_LOCATION = "../";
 
-	private static final String MESSAGE_ASK_INPUT = "Command:";
-	private static final String MESSAGE_INVALID_COMMAND = "Invalid command";
+	private static final String MESSAGE_ASK_INPUT = "Command: ";
+	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. ";
+	private static final String MESSAGE_FILE_READY = " is ready for use";	
 	
 	private static final String FORMAT_NEW_LINE = "\n";
+	
+	// Items in list
+	private static int numItems = 1;
 
 	// Possible commands
 	private static final String[] COMMANDS = {"add", "delete", "display", "clear"};
 	
-	private static BufferedWriter out;
+	private static BufferedWriter output;
+	private static Scanner scanner = new Scanner(System.in);
 	
-	public static void main(String[] fileName) {
+	public static void main(String[] args) {
+		String fileName = args[0];
+		
+		System.out.println(MESSAGE_WELCOME + fileName + MESSAGE_FILE_READY);
 		try {
-			out = getWriter(fileName);
-			String input = getInput();
-			String cmd = getCommand(input);
-			executeCommand(cmd, getParam(input));
+			output = getWriter(fileName);
+			do {
+				System.out.print(MESSAGE_ASK_INPUT);
+				String input = scanner.nextLine();
+				executeCommand(getCommand(input), getParam(input), fileName);
+			} while(scanner.hasNextLine());
 			
-			out.close();
+			output.close();
+			scanner.close();
 		} catch (IOException e) {
-			// TODO: handle exception. print exception for now
 			System.out.println(e);
 		}
 	}
 
-	private static String getInput() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.println(MESSAGE_ASK_INPUT);
-		String input = scanner.nextLine();
-		scanner.close();
-		
-		return input;
-	}
+//	private static String getInput() {
+//		try {
+//			System.out.println(MESSAGE_ASK_INPUT);
+//			String input = scanner.nextLine();
+//			scanner.close();
+//			
+//			return input;			
+//		} catch (IOException e) {
+//			System.out.println(e);
+//		}
+//	}
 
-	private static BufferedWriter getWriter(String[] fileName) throws IOException {
-		File file = new File(FILE_LOCATION + fileName[0] + FILE_FORMAT);
+	private static BufferedWriter getWriter(String fileName) throws IOException {
+		File file = new File(FILE_LOCATION + fileName);
 		return new BufferedWriter(new FileWriter(file));
 	}
 	
@@ -60,13 +71,10 @@ public class TextBuddy {
 	}
 	
 	// Perform action based on command given
-	private static Boolean executeCommand(String cmd, String text) {
-		Boolean flag = false;
-		String msg = "some success message";
-		
+	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-			appendToFile(text);
-			flag = true;
+			appendToFile(param);
+			addSuccess(fileName, param);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
 			System.out.println("delete");
 		} else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
@@ -76,10 +84,6 @@ public class TextBuddy {
 		} else {
 			
 		}
-		
-		System.out.println(msg);
-		System.out.println();
-		return flag;
 	}
 
 	private static String getParam(String input) {
@@ -87,13 +91,15 @@ public class TextBuddy {
 		return input.substring(start + 1);
 	}
 	
-	private static void appendToFile(String input) {
+	private static void appendToFile(String text) {
 		try {
-			out.write(input + FORMAT_NEW_LINE);
-		} catch (Exception e) {
-			// TODO: handle exception
+			output.write(Integer.toString(numItems++) + ". " + text + FORMAT_NEW_LINE);
+		} catch (IOException e) {
+			System.out.println(e);
 		}
 	}
- 	
 	
+	private static void addSuccess(String fileName, String text) {
+		System.out.println("added to " + fileName + ": \"" + text + "\"");
+	}
 }
