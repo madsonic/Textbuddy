@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -30,7 +32,7 @@ public class TextBuddy {
 		try {
 			output = getWriter(fileName);
 			do {
-				System.out.print(MESSAGE_ASK_INPUT);
+				System.out.println(MESSAGE_ASK_INPUT);
 				String input = scanner.nextLine();
 				executeCommand(getCommand(input), getParam(input), fileName);
 			} while(scanner.hasNextLine());
@@ -73,16 +75,29 @@ public class TextBuddy {
 	// Perform action based on command given
 	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-			appendToFile(param);
+			appendToFile(param, fileName);
 			addSuccess(fileName, param);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
 			System.out.println("delete");
 		} else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
-			System.out.println("display");
+			displayAllL(fileName);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
 			System.out.println("clear");
 		} else {
 			
+		}
+	}
+
+	private static void displayAllL(String fileName) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(FILE_LOCATION + fileName));
+			String currLine;
+			System.out.println(reader.readLine());
+			while ((currLine = reader.readLine()) != null) {
+				System.out.println(currLine);
+			}
+		} catch (IOException e) {
+			System.out.println(e);
 		}
 	}
 
@@ -91,9 +106,10 @@ public class TextBuddy {
 		return input.substring(start + 1);
 	}
 	
-	private static void appendToFile(String text) {
+	private static void appendToFile(String text, String fileName) {
 		try {
 			output.write(Integer.toString(numItems++) + ". " + text + FORMAT_NEW_LINE);
+			output.flush();
 		} catch (IOException e) {
 			System.out.println(e);
 		}
