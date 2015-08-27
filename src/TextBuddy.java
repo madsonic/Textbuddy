@@ -89,15 +89,20 @@ public class TextBuddy {
 	}
 
 	private static void displayAllL(String fileName) {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(FILE_LOCATION + fileName));
-			String currLine;
-			System.out.println(reader.readLine());
-			while ((currLine = reader.readLine()) != null) {
-				System.out.println(currLine);
-			}
-		} catch (IOException e) {
-			System.out.println(e);
+//		try {
+//			BufferedReader reader = new BufferedReader(new FileReader(FILE_LOCATION + fileName));
+//			String currLine;
+//			System.out.println(reader.readLine());
+//			while ((currLine = reader.readLine()) != null) {
+//				System.out.println(currLine);
+//			}
+//		} catch (IOException e) {
+//			System.out.println(e);
+//		}
+		
+		for (int i = 0; i < itemBuffer.size(); i++) {
+			int index = i + 1;
+			System.out.println(index + ". " + itemBuffer.get(i));
 		}
 	}
 
@@ -114,10 +119,9 @@ public class TextBuddy {
 	// Append last item in item buffer to file
 	private static void appendToFile() {
 		try {
-			int index = itemBuffer.size();
-			int last = index - 1;
-			String prefix = Integer.toString(index) + ". ";
-			output.write(prefix + itemBuffer.get(last) + FORMAT_NEW_LINE);
+			int last = itemBuffer.size() - 1;
+			
+			output.write(itemBuffer.get(last));
 			output.flush();
 		} catch (IOException e) {
 			System.out.println(e);
