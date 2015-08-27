@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TextBuddy {
@@ -16,14 +17,12 @@ public class TextBuddy {
 	
 	private static final String FORMAT_NEW_LINE = "\n";
 	
-	// Items in list
-	private static int numItems = 1;
-
 	// Possible commands
 	private static final String[] COMMANDS = {"add", "delete", "display", "clear"};
 	
 	private static BufferedWriter output;
 	private static Scanner scanner = new Scanner(System.in);
+	private static ArrayList<String> itemBuffer = new ArrayList<String>();
 	
 	public static void main(String[] args) {
 		String fileName = args[0];
@@ -75,7 +74,8 @@ public class TextBuddy {
 	// Perform action based on command given
 	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-			appendToFile(param, fileName);
+			addToBuffer(param);
+			appendToFile();
 			addSuccess(fileName, param);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
 			System.out.println("delete");
@@ -106,9 +106,18 @@ public class TextBuddy {
 		return input.substring(start + 1);
 	}
 	
-	private static void appendToFile(String text, String fileName) {
+	// Append param to item buffer
+	private static void addToBuffer(String param) {
+		itemBuffer.add(param);
+	}
+	
+	// Append last item in item buffer to file
+	private static void appendToFile() {
 		try {
-			output.write(Integer.toString(numItems++) + ". " + text + FORMAT_NEW_LINE);
+			int index = itemBuffer.size();
+			int last = index - 1;
+			String prefix = Integer.toString(index) + ". ";
+			output.write(prefix + itemBuffer.get(last) + FORMAT_NEW_LINE);
 			output.flush();
 		} catch (IOException e) {
 			System.out.println(e);
