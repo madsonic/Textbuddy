@@ -7,6 +7,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Able to perform add, delete, clear, display
+ * 
+ * All the above command keywords must be the first word of the input
+ * Everything thereafter is considered arguments
+ * 
+ * Example use
+ * add string
+ * add sometext more text
+ * Adds sometext more text to the list
+ * 
+ * display
+ * Enumerates all added text. Numbering starts from 1
+ * 
+ * delete index
+ * Removes item from output file and buffer
+ * 
+ * clear
+ * Same as delete every index
+ * 
+ * @author Gerald
+ *
+ */
 public class TextBuddy {
 	
 	private static final String FILE_LOCATION = "../";
@@ -50,7 +73,7 @@ public class TextBuddy {
 			appendToFile();
 			addSuccess(fileName, param);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
-			System.out.println("delete");
+			delete(param);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
 			displayAllL(fileName);
 		} else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
@@ -66,6 +89,20 @@ public class TextBuddy {
 			int index = i + 1;
 			System.out.println(index + ". " + itemBuffer.get(i));
 		}
+	}
+	
+	// Append param to item buffer
+	private static void addToBuffer(String param) {
+		itemBuffer.add(param);
+	}
+	
+	/**
+	 * Removes item from buffer. specified by 1 based index
+	 * @param index
+	 */
+	private static void delete(String index) {
+		int i = Integer.parseInt(index) - 1; // adjust index for 0 based buffer
+		itemBuffer.remove(i); 
 	}
 	
 	private static BufferedWriter getWriter(String fileName) throws IOException {
@@ -87,11 +124,6 @@ public class TextBuddy {
 	private static String getParam(String input) {
 		int start = input.indexOf(" ");
 		return input.substring(start + 1);
-	}
-	
-	// Append param to item buffer
-	private static void addToBuffer(String param) {
-		itemBuffer.add(param);
 	}
 	
 	// Append last item in item buffer to file
