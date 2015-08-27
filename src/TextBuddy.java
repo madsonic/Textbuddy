@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
+/*
  * Able to perform add, delete, clear, display
  * 
  * All the above command keywords must be the first word of the input
@@ -27,13 +27,8 @@ import java.util.Scanner;
  * clear
  * Same as delete every index
  * 
- * @author Gerald
- *
  */
 public class TextBuddy {
-	
-	private static final String FILE_LOCATION = "../";
-
 	private static final String MESSAGE_ASK_INPUT = "Command: ";
 	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. ";
 	private static final String MESSAGE_FILE_READY = " is ready for use";	
@@ -42,7 +37,6 @@ public class TextBuddy {
 	private static final String MESSAGE_DELETE = "deleted from ";
 	private static final String MESSAGE_EMPTY_LIST = "List is empty";
 	
-	// Possible commands
 	private static final String[] COMMANDS = {"add", "delete", "display", "clear"};
 	
 	private static BufferedWriter output;
@@ -63,26 +57,18 @@ public class TextBuddy {
 	// Perform action based on command given
 	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-			
 			addToBuffer(param);
 			addSuccess(fileName, param);
-			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
-			
 			int index = Integer.parseInt(param) - 1;
 			String str = itemBuffer.get(index);
 			deleteFromBuffer(index);
 			deleteSuccess(fileName, str);
-			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
-			
 			displayAll(fileName);
-			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
-			
 			clear();
 			clearSuccess(fileName);
-			
 		}
 		
 		writeToFile(fileName);
@@ -136,7 +122,7 @@ public class TextBuddy {
 	}
 
 	private static BufferedWriter getWriter(String fileName) throws IOException {
-		File file = new File(FILE_LOCATION + fileName);
+		File file = new File(fileName);
 		return new BufferedWriter(new FileWriter(file));
 	}
 	
