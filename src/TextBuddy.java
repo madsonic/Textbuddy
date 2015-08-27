@@ -43,34 +43,6 @@ public class TextBuddy {
 		}
 	}
 
-//	private static String getInput() {
-//		try {
-//			System.out.println(MESSAGE_ASK_INPUT);
-//			String input = scanner.nextLine();
-//			scanner.close();
-//			
-//			return input;			
-//		} catch (IOException e) {
-//			System.out.println(e);
-//		}
-//	}
-
-	private static BufferedWriter getWriter(String fileName) throws IOException {
-		File file = new File(FILE_LOCATION + fileName);
-		return new BufferedWriter(new FileWriter(file));
-	}
-	
-	private static String getCommand(String input) {
-		return getFirstWord(input);
-	}
-	
-	// Read first word as command keyword
-	private static String getFirstWord(String input) {
-		// split at white space
-		String delimiter = "\\s";
-		return input.trim().split(delimiter)[0];
-	}
-	
 	// Perform action based on command given
 	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
@@ -87,25 +59,31 @@ public class TextBuddy {
 			
 		}
 	}
-
+	
+	// List out all items in the buffer
 	private static void displayAllL(String fileName) {
-//		try {
-//			BufferedReader reader = new BufferedReader(new FileReader(FILE_LOCATION + fileName));
-//			String currLine;
-//			System.out.println(reader.readLine());
-//			while ((currLine = reader.readLine()) != null) {
-//				System.out.println(currLine);
-//			}
-//		} catch (IOException e) {
-//			System.out.println(e);
-//		}
-		
 		for (int i = 0; i < itemBuffer.size(); i++) {
 			int index = i + 1;
 			System.out.println(index + ". " + itemBuffer.get(i));
 		}
 	}
-
+	
+	private static BufferedWriter getWriter(String fileName) throws IOException {
+		File file = new File(FILE_LOCATION + fileName);
+		return new BufferedWriter(new FileWriter(file));
+	}
+	
+	private static String getCommand(String input) {
+		return getFirstWord(input);
+	}
+	
+	// Read first word as command keyword
+	private static String getFirstWord(String input) {
+		// split at white space
+		String delimiter = "\\s";
+		return input.trim().split(delimiter)[0];
+	}
+	
 	private static String getParam(String input) {
 		int start = input.indexOf(" ");
 		return input.substring(start + 1);
