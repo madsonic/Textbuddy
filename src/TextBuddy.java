@@ -37,8 +37,10 @@ public class TextBuddy {
 	private static final String MESSAGE_ASK_INPUT = "Command: ";
 	private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. ";
 	private static final String MESSAGE_FILE_READY = " is ready for use";	
-	
-	private static final String FORMAT_NEW_LINE = "\n";
+	private static final String MESSAGE_ADD = "added to ";	
+	private static final String MESSAGE_CLEAR = "all content deleted from ";
+	private static final String MESSAGE_DELETE = "deleted from ";
+	private static final String MESSAGE_EMPTY_LIST = "List is empty";
 	
 	// Possible commands
 	private static final String[] COMMANDS = {"add", "delete", "display", "clear"};
@@ -51,60 +53,88 @@ public class TextBuddy {
 		String fileName = args[0];
 		
 		System.out.println(MESSAGE_WELCOME + fileName + MESSAGE_FILE_READY);
-		try {
-			output = getWriter(fileName);
-			do {
-				System.out.println(MESSAGE_ASK_INPUT);
-				String input = scanner.nextLine();
-				executeCommand(getCommand(input), getParam(input), fileName);
-			} while(scanner.hasNextLine());
-			
-			output.close();
-			scanner.close();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
+		do {
+			System.out.println(MESSAGE_ASK_INPUT);
+			String input = scanner.nextLine();
+			executeCommand(getCommand(input), getParam(input), fileName);
+		} while(scanner.hasNextLine());
 	}
 
 	// Perform action based on command given
 	private static void executeCommand(String cmd, String param, String fileName) {
 		if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
+			
 			addToBuffer(param);
-			appendToFile();
 			addSuccess(fileName, param);
+			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
-			delete(param);
+			
+			int index = Integer.parseInt(param) - 1;
+			String str = itemBuffer.get(index);
+			deleteFromBuffer(index);
+			deleteSuccess(fileName, str);
+			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
-			displayAllL(fileName);
+			
+			displayAll(fileName);
+			
 		} else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
-			System.out.println("clear");
-		} else {
+			
+			clear();
+			clearSuccess(fileName);
 			
 		}
+		
+		writeToFile(fileName);
 	}
 	
-	// List out all items in the buffer
-	private static void displayAllL(String fileName) {
-		for (int i = 0; i < itemBuffer.size(); i++) {
-			int index = i + 1;
-			System.out.println(index + ". " + itemBuffer.get(i));
+	// List all items in the buffer
+	private static void displayAll(String fileName) {
+		int len = itemBuffer.size();
+		
+		if (len == 0) {
+			System.out.println(MESSAGE_EMPTY_LIST);
+		} else {
+			for (int i = 0; i < itemBuffer.size(); i++) {
+				int index = i + 1;
+				System.out.println(index + ". " + itemBuffer.get(i));
+			}
 		}
 	}
 	
-	// Append param to item buffer
-	private static void addToBuffer(String param) {
-		itemBuffer.add(param);
+	// Append item to item buffer
+	private static void addToBuffer(String item) {
+		itemBuffer.add(item);
 	}
 	
 	/**
-	 * Removes item from buffer. specified by 1 based index
+	 * Removes item from buffer
 	 * @param index
-	 */
-	private static void delete(String index) {
-		int i = Integer.parseInt(index) - 1; // adjust index for 0 based buffer
-		itemBuffer.remove(i); 
+	 */	
+	private static void deleteFromBuffer(int index) {
+		itemBuffer.remove(index);		
 	}
 	
+	private static void clear() {
+		int length = itemBuffer.size();
+		for (int i = 0; i < length; i++) {
+			deleteFromBuffer(0);
+		}
+	}
+	
+	// Write everything from itemBuffer to file
+	private static void writeToFile(String path) {
+		try {
+			output = getWriter(path);
+			for (String line : itemBuffer) {
+				output.write(line + "\n");
+			}
+			output.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+
 	private static BufferedWriter getWriter(String fileName) throws IOException {
 		File file = new File(FILE_LOCATION + fileName);
 		return new BufferedWriter(new FileWriter(file));
@@ -126,19 +156,16 @@ public class TextBuddy {
 		return input.substring(start + 1);
 	}
 	
-	// Append last item in item buffer to file
-	private static void appendToFile() {
-		try {
-			int last = itemBuffer.size() - 1;
-			
-			output.write(itemBuffer.get(last));
-			output.flush();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
+	private static void addSuccess(String fileName, String text) {
+		System.out.println(MESSAGE_ADD + fileName + ": \"" + text + "\"");
 	}
 	
-	private static void addSuccess(String fileName, String text) {
-		System.out.println("added to " + fileName + ": \"" + text + "\"");
+	private static void deleteSuccess(String fileName, String text) {
+		System.out.println(MESSAGE_DELETE + fileName + ": \"" + text + "\"");
 	}
+	
+	private static void clearSuccess(String fileName) {
+		System.out.println(MESSAGE_CLEAR + fileName);
+	}
+	
 }
