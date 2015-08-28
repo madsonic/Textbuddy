@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,7 +14,7 @@ import java.util.Scanner;
  * Example use
  * add string
  * add sometext more text
- * Adds sometext more text to the list
+ * Adds 'sometext more text' to the list
  * 
  * display
  * Enumerates all added text. Numbering starts from 1
