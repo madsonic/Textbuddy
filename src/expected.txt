@@ -1,0 +1,32 @@
+Welcome to TextBuddy. testfile.txt is ready for use
+Command: 
+added to testfile.txt: "some text"
+Command: 
+added to testfile.txt: "some more text"
+Command: 
+added to testfile.txt: "foobar"
+Command: 
+added to testfile.txt: "even more text"
+Command: 
+1. some text
+2. some more text
+3. foobar
+4. even more text
+Command: 
+deleted from testfile.txt: "some more text"
+Command: 
+1. some text
+2. foobar
+3. even more text
+Command: 
+all content deleted from testfile.txt
+Command:
+List is empty
+Command: 
+added to testfile.txt: "item 1"
+Command: 
+added to testfile.txt: "item 2"
+Command: 
+added to testfile.txt: "item 3"
+Command: 
+added to testfile.txt: "item 4"

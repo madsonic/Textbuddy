@@ -1,0 +1,13 @@
+add some text
+add some more text
+add foobar
+add even more text
+display
+delete 2
+display
+clear
+display
+add item 1
+add item 2
+add item 3
+add item 4
