@@ -43,32 +43,33 @@ public class TextBuddy {
     private static BufferedWriter output;
     private static Scanner scanner = new Scanner(System.in);
     private static ArrayList<String> itemBuffer = new ArrayList<String>();
+    private static String fileName;
     
     public static void main(String[] args) {
-        String fileName = args[0];
+        fileName = args[0];
         showMsg(String.format(MESSAGE_WELCOME, fileName));
 
         do {
             showMsg(MESSAGE_ASK_INPUT);
             String input = scanner.nextLine();
-            executeCommand(getCommand(input), getParam(input), fileName);
+            executeCommand(getCommand(input), getParam(input));
         } while(scanner.hasNextLine());
     }
 
     // Perform action based on command given
-    public static void executeCommand(String cmd, String param, String fileName) {
+    public static void executeCommand(String cmd, String param) {
         if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-            commandAdd(param, fileName);
+            commandAdd(param);
         } else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
-            commandDelete(param, fileName);
+            commandDelete(param);
         } else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
             commandDisplay();
         } else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
-            commandClear(fileName);
+            commandClear();
         } else if (cmd.equalsIgnoreCase(COMMANDS[4])) { // sort
         	commandSort();
         }
-        writeToFile(fileName);
+        writeToFile();
     }
     
     /* =======================
@@ -81,21 +82,21 @@ public class TextBuddy {
 		commandDisplay();
 	}
 
-	public static void commandAdd(String param, String fileName) {
+	public static void commandAdd(String param) {
 		addToBuffer(param);
-		addSuccess(fileName, param);
+		addSuccess(param);
 	}
 	
-	public static void commandDelete(String param, String fileName) {
+	public static void commandDelete(String param) {
 		int index = Integer.parseInt(param) - 1;
 		String str = itemBuffer.get(index);
 		deleteFromBuffer(index);
-		deleteSuccess(fileName, str);
+		deleteSuccess(str);
 	}
 	
-	public static void commandClear(String fileName) {
+	public static void commandClear() {
 		clear();
-		clearSuccess(fileName);
+		clearSuccess();
 	}
     
     // List all items in the buffer
@@ -138,9 +139,9 @@ public class TextBuddy {
      */
     
     // Write everything from itemBuffer to file
-    public static void writeToFile(String path) {
+    public static void writeToFile() {
         try {
-            output = getWriter(path);
+            output = getWriter();
             for (String line : itemBuffer) {
                 output.write(line + "\n");
             }
@@ -150,7 +151,7 @@ public class TextBuddy {
         }
     }
 
-    public static BufferedWriter getWriter(String fileName) throws IOException {
+    public static BufferedWriter getWriter() throws IOException {
         File file = new File(fileName);
         return new BufferedWriter(new FileWriter(file));
     }
@@ -188,15 +189,15 @@ public class TextBuddy {
     	System.out.println(message);
     }
     
-    public static void addSuccess(String fileName, String text) {
+    public static void addSuccess(String text) {
         showMsg(String.format(MESSAGE_ADD, fileName, text));
     }
     
-    public static void deleteSuccess(String fileName, String text) {
+    public static void deleteSuccess(String text) {
         showMsg(String.format(MESSAGE_DELETE, fileName, text));
     }
     
-    public static void clearSuccess(String fileName) {
+    public static void clearSuccess() {
         showMsg(String.format(MESSAGE_CLEAR, fileName));
     }
     
