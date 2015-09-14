@@ -122,14 +122,21 @@ public class TextBuddy {
 //		commandDisplay();
 	}
 
-	public static String commandSearch(String string) {
+	public static void commandSearch(String string) {
+		boolean noResult = true;
+//		ArrayList<String> searchHits;
+		
 		for (int i = 0; i < itemBuffer.size(); i++) {
 			String item = itemBuffer.get(i);
+			
 			if (item.contains(string)) {
-				return String.format(STATEMENT_ENUM, i + 1, itemBuffer.get(i)); 
+				showMsg(String.format(STATEMENT_ENUM, i + 1, item)); 
+				noResult = false;
 			}
 		}
-		return MESSAGE_EMPTY_FIND;
+		if (noResult) {
+			showMsg(MESSAGE_EMPTY_FIND);;
+		}
 	}
 
 	// Append item to item buffer

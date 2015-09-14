@@ -8,7 +8,7 @@ import org.junit.Test;
 
 
 public class CommandSort {
-	String[] sorted = {"item0", "item1", "item2"};
+	private final String[] sorted = {"item0", "item1", "item2"};
 	
 	@After
 	public void tearDown() {
