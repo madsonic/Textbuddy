@@ -1,8 +1,10 @@
+import java.awt.print.Printable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 /*
@@ -25,17 +27,18 @@ import java.util.Scanner;
  * clear
  * Same as delete every index
  * 
+ * sort
+ * sort the items permanently
  */
 public class TextBuddy {
     private static final String MESSAGE_ASK_INPUT = "Command: ";
-    private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %s is ready for use";
-//    private static final String MESSAGE_FILE_READY = " is ready for use";   
+    private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %s is ready for use";   
     private static final String MESSAGE_ADD = "added to %s: \"%s\"";  
     private static final String MESSAGE_CLEAR = "all content deleted from %s";
     private static final String MESSAGE_DELETE = "deleted from %s: \"%s\"";
     private static final String MESSAGE_EMPTY_LIST = "List is empty";
     
-    private static final String[] COMMANDS = {"add", "delete", "display", "clear"};
+    private static final String[] COMMANDS = {"add", "delete", "display", "clear", "sort"};
     
     private static BufferedWriter output;
     private static Scanner scanner = new Scanner(System.in);
@@ -62,8 +65,9 @@ public class TextBuddy {
             commandDisplay();
         } else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
             commandClear(fileName);
+        } else if (cmd.equalsIgnoreCase(COMMANDS[4])) { // sort
+        	commandSort();
         }
-        
         writeToFile(fileName);
     }
     
@@ -72,19 +76,24 @@ public class TextBuddy {
      * =======================
      */
 	
+	public static void commandSort() {
+		Collections.sort(itemBuffer);
+		commandDisplay();
+	}
+
 	public static void commandAdd(String param, String fileName) {
 		addToBuffer(param);
 		addSuccess(fileName, param);
 	}
 	
-	private static void commandDelete(String param, String fileName) {
+	public static void commandDelete(String param, String fileName) {
 		int index = Integer.parseInt(param) - 1;
 		String str = itemBuffer.get(index);
 		deleteFromBuffer(index);
 		deleteSuccess(fileName, str);
 	}
 	
-	private static void commandClear(String fileName) {
+	public static void commandClear(String fileName) {
 		clear();
 		clearSuccess(fileName);
 	}
@@ -189,5 +198,14 @@ public class TextBuddy {
     
     public static void clearSuccess(String fileName) {
         showMsg(String.format(MESSAGE_CLEAR, fileName));
-    }    
+    }
+    
+    /* =====================================
+     *  Methods to expose data for testing
+     * =====================================
+     */
+    
+    public static ArrayList<String> getBuffer() {
+    	return new ArrayList<String>(itemBuffer);
+    }
 }
