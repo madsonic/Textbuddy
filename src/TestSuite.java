@@ -3,7 +3,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	GetFirstWord.class,
-	GetParam.class,
+	GetArgument.class,
 	CommandDisplay.class,
 	CommandSort.class,
 	CommandSearch.class

@@ -1,4 +1,3 @@
-import java.awt.print.Printable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -31,23 +30,32 @@ import java.util.Scanner;
  * sort the items permanently
  */
 public class TextBuddy {
-    private static final String MESSAGE_ASK_INPUT = "Command: ";
-    private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. %s is ready for use";   
-    private static final String MESSAGE_ADD = "added to %s: \"%s\"";  
-    private static final String MESSAGE_CLEAR = "all content deleted from %s";
-    private static final String MESSAGE_DELETE = "deleted from %s: \"%s\"";
-    private static final String MESSAGE_EMPTY_LIST = "List is empty";
-    private static final String MESSAGE_EMPTY_FIND = "No result";
+    private static final String MESSAGE_ASK_INPUT   = "Command: ";
+    private static final String MESSAGE_WELCOME     = "Welcome to TextBuddy. %s is ready for use";   
+    private static final String MESSAGE_ADD         = "added to %s: \"%s\"";  
+    private static final String MESSAGE_CLEAR       = "all content deleted from %s";
+    private static final String MESSAGE_DELETE      = "deleted from %s: \"%s\"";
+    private static final String MESSAGE_EMPTY_LIST  = "List is empty";
+    private static final String MESSAGE_EMPTY_FIND  = "No result";
+    private static final String MESSAGE_UNKNOWN_CMD = "Unknown command";
     
     private static final String STATEMENT_ENUM = "%d. %s";
     
+    private static final String COMMAND_ADD     = "add";
+    private static final String COMMAND_DELETE  = "delete";
+    private static final String COMMAND_DISPLAY = "display";
+    private static final String COMMAND_CLEAR   = "clear";
+    private static final String COMMAND_SORT    = "sort";
+    private static final String COMMAND_SEARCH  = "search";    
     
-    private static final String[] COMMANDS = {"add", "delete", "display", "clear", "sort"};
+    enum COMMANDS {
+    	ADD, DELETE, DISPLAY, CLEAR, SORT, SEARCH, INVALID
+    }
     
     private static BufferedWriter output;
     private static Scanner scanner = new Scanner(System.in);
     private static ArrayList<String> itemBuffer = new ArrayList<String>();
-    private static String fileName;
+    private static String fileName = "./output.txt";
     
     public static void main(String[] args) {
         fileName = args[0];
@@ -56,24 +64,82 @@ public class TextBuddy {
         do {
             showMsg(MESSAGE_ASK_INPUT);
             String input = scanner.nextLine();
-            executeCommand(getCommand(input), getParam(input));
+            executeCommand(input);
         } while(scanner.hasNextLine());
     }
 
     // Perform action based on command given
-    public static void executeCommand(String cmd, String param) {
-        if (cmd.equalsIgnoreCase(COMMANDS[0])) {        // add
-            commandAdd(param);
-        } else if (cmd.equalsIgnoreCase(COMMANDS[1])) { // delete
-            commandDelete(param);
-        } else if (cmd.equalsIgnoreCase(COMMANDS[2])) { // display
-            commandDisplay();
-        } else if (cmd.equalsIgnoreCase(COMMANDS[3])) { // clear
-            commandClear();
-        } else if (cmd.equalsIgnoreCase(COMMANDS[4])) { // sort
-        	commandSort();
-        }
-        writeToFile();
+    public static void executeCommand(String userInput) {
+    	COMMANDS cmd = getCommand(userInput);
+    	String param = getArgument(userInput);
+    	
+    	switch(cmd) {
+    		case ADD:
+    			commandAdd(param);
+    			return;
+    		case DELETE:
+    			commandDelete(param);
+    			return;
+    		case DISPLAY:
+    			commandDisplay();
+    			return;
+    		case CLEAR:
+    			commandClear();
+    			return;
+    		case SORT:
+    			commandSort();
+    			return;
+    		case SEARCH:
+    			commandSearch(param);
+    			return;
+    		case INVALID:
+				showMsg(MESSAGE_UNKNOWN_CMD);
+				return;
+			default:
+				// should not reach here as INVALID should be able to handle all other cases
+				throw new Error("Command execution error");
+    	}
+    }
+    
+    /* ======================
+     *    Command Parsing   
+     * ======================
+     */
+    public static COMMANDS getCommand(String input) {
+        String w = getFirstWord(input);
+        
+        if (w.equalsIgnoreCase(COMMAND_ADD)) {
+        	return COMMANDS.ADD;
+        } else if (w.equalsIgnoreCase(COMMAND_CLEAR)) {
+        	return COMMANDS.CLEAR;
+        } else if (w.equalsIgnoreCase(COMMAND_DELETE)) {
+        	return COMMANDS.DELETE;
+	    } else if (w.equalsIgnoreCase(COMMAND_DISPLAY)) {
+	    	return COMMANDS.DISPLAY;
+	    } else if (w.equalsIgnoreCase(COMMAND_SORT)) {
+	    	return COMMANDS.SORT;
+	    } else if (w.equalsIgnoreCase(COMMAND_SEARCH)) {
+	    	return COMMANDS.SEARCH;
+	    } else {
+	    	return COMMANDS.INVALID;
+	    }
+    }
+    
+    // Everything after command keyword is argument
+    public static String getArgument(String input) {
+    	String[] arr = input.split(" ", 2);
+    	if (arr.length == 1) {
+    		return "";
+    	} else {
+    		return arr[1];        	
+    	}
+    }
+    
+    // Read first word as command keyword
+    public static String getFirstWord(String input) {
+        // split at white space
+        String delimiter = "\\s";
+        return input.trim().split(delimiter)[0];
     }
     
     /* =======================
@@ -84,6 +150,7 @@ public class TextBuddy {
 	public static void commandAdd(String param) {
 		addToBuffer(param);
 		addSuccess(param);
+		writeToFile();
 	}
 	
 	public static void commandDelete(String param) {
@@ -91,11 +158,13 @@ public class TextBuddy {
 		String str = itemBuffer.get(index);
 		deleteFromBuffer(index);
 		deleteSuccess(str);
+		writeToFile();
 	}
 	
 	public static void commandClear() {
 		clear();
 		clearSuccess();
+		writeToFile();
 	}
     
     // List all items in the buffer
@@ -112,19 +181,14 @@ public class TextBuddy {
         }
     }
     
-    /* =======================
-	 *    Command methods
-	 * =======================
-	 */
-	
 	public static void commandSort() {
 		Collections.sort(itemBuffer);
-//		commandDisplay();
+		commandDisplay();
+		writeToFile();
 	}
 
 	public static void commandSearch(String string) {
 		boolean noResult = true;
-//		ArrayList<String> searchHits;
 		
 		for (int i = 0; i < itemBuffer.size(); i++) {
 			String item = itemBuffer.get(i);
@@ -180,31 +244,6 @@ public class TextBuddy {
     public static BufferedWriter getWriter() throws IOException {
         File file = new File(fileName);
         return new BufferedWriter(new FileWriter(file));
-    }
-    
-    /* ======================
-     *    Command Parsing   
-     * ======================
-     */
-    public static String getCommand(String input) {
-        return getFirstWord(input);
-    }
-    
-    // Read first word as command keyword
-    public static String getFirstWord(String input) {
-        // split at white space
-        String delimiter = "\\s";
-        return input.trim().split(delimiter)[0];
-    }
-    
-    // Everything after command keyword is argument
-    public static String getParam(String input) {
-        String[] arr = input.split(" ", 2);
-        if (arr.length == 1) {
-        	return "";
-        } else {
-        	return arr[1];        	
-        }
     }
     
     /* ======================
