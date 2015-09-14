@@ -31,9 +31,10 @@ public class CommandSearch {
     	assertEquals(expect, TextBuddy.commandSearch("characters !@#$"));
     }
 
-//    @Test
-//    public void multiMatch() {
-//    	String expect1 = ""
-//    }
+    @Test
+    public void nonExactSearch() {
+    	String expect = "2. characters !@#$";
+    	assertEquals(expect, TextBuddy.commandSearch("!@"));
+    }
 
 }
