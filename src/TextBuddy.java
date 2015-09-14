@@ -37,6 +37,10 @@ public class TextBuddy {
     private static final String MESSAGE_CLEAR = "all content deleted from %s";
     private static final String MESSAGE_DELETE = "deleted from %s: \"%s\"";
     private static final String MESSAGE_EMPTY_LIST = "List is empty";
+    private static final String MESSAGE_EMPTY_FIND = "No result";
+    
+    private static final String STATEMENT_ENUM = "%d. %s";
+    
     
     private static final String[] COMMANDS = {"add", "delete", "display", "clear", "sort"};
     
@@ -77,11 +81,6 @@ public class TextBuddy {
      * =======================
      */
 	
-	public static void commandSort() {
-		Collections.sort(itemBuffer);
-		commandDisplay();
-	}
-
 	public static void commandAdd(String param) {
 		addToBuffer(param);
 		addSuccess(param);
@@ -108,12 +107,32 @@ public class TextBuddy {
         } else {
             for (int i = 0; i < len; i++) {
                 int index = i + 1;
-                showMsg(index + ". " + itemBuffer.get(i));
+                showMsg(String.format(STATEMENT_ENUM, index, itemBuffer.get(i)));
             }
         }
     }
     
-    // Append item to item buffer
+    /* =======================
+	 *    Command methods
+	 * =======================
+	 */
+	
+	public static void commandSort() {
+		Collections.sort(itemBuffer);
+//		commandDisplay();
+	}
+
+	public static String commandSearch(String string) {
+		for (int i = 0; i < itemBuffer.size(); i++) {
+			String item = itemBuffer.get(i);
+			if (item.contains(string)) {
+				return String.format(STATEMENT_ENUM, i + 1, itemBuffer.get(i)); 
+			}
+		}
+		return MESSAGE_EMPTY_FIND;
+	}
+
+	// Append item to item buffer
     public static void addToBuffer(String item) {
         itemBuffer.add(item);
     }

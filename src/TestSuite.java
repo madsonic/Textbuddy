@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 	GetFirstWord.class,
 	GetParam.class,
 	CommandDisplay.class,
-	CommandSort.class
+	CommandSort.class,
+	CommandSearch.class
 })
 
 public class TestSuite {
