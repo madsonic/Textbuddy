@@ -23,10 +23,20 @@ all content deleted from output.txt
 Command:
 List is empty
 Command: 
-added to output.txt: "item 1"
-Command: 
-added to output.txt: "item 2"
+added to output.txt: "item 4"
 Command: 
 added to output.txt: "item 3"
 Command: 
-added to output.txt: "item 4"
+added to output.txt: "item 2"
+Command: 
+added to output.txt: "item 1"
+Command: 
+1. item 4
+2. item 3
+3. item 2
+4. item 1
+Command: 
+1. item 1
+2. item 2
+3. item 3
+4. item 4
