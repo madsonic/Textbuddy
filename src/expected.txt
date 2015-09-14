@@ -1,32 +1,32 @@
-Welcome to TextBuddy. testfile.txt is ready for use
+Welcome to TextBuddy. output.txt is ready for use
 Command: 
-added to testfile.txt: "some text"
+added to output.txt: "some text"
 Command: 
-added to testfile.txt: "some more text"
+added to output.txt: "some more text"
 Command: 
-added to testfile.txt: "foobar"
+added to output.txt: "foobar"
 Command: 
-added to testfile.txt: "even more text"
+added to output.txt: "even more text"
 Command: 
 1. some text
 2. some more text
 3. foobar
 4. even more text
 Command: 
-deleted from testfile.txt: "some more text"
+deleted from output.txt: "some more text"
 Command: 
 1. some text
 2. foobar
 3. even more text
 Command: 
-all content deleted from testfile.txt
+all content deleted from output.txt
 Command:
 List is empty
 Command: 
-added to testfile.txt: "item 1"
+added to output.txt: "item 1"
 Command: 
-added to testfile.txt: "item 2"
+added to output.txt: "item 2"
 Command: 
-added to testfile.txt: "item 3"
+added to output.txt: "item 3"
 Command: 
-added to testfile.txt: "item 4"
+added to output.txt: "item 4"
