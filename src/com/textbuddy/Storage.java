@@ -16,4 +16,8 @@ public class Storage {
 			System.out.println(e);
 		}
 	}
+	
+	public File getFile() {
+		return m_file;
+	}
 }
