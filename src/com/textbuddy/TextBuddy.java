@@ -32,10 +32,11 @@ import java.util.Scanner;
  * 
  * sort
  * sort the items permanently
+ * 
+ * search
+ * looks for match in task description
  */
 public class TextBuddy {
-    private static final String STATEMENT_ENUM = "%d. %s";
-    
     private final String COMMAND_ADD     = "add";
     private final String COMMAND_DELETE  = "delete";
     private final String COMMAND_DISPLAY = "display";
@@ -53,17 +54,15 @@ public class TextBuddy {
     private ArrayList<String> itemBuffer;
     private MessageCentre msgCentre;
     
-    public TextBuddy(String fileName) {
+    public TextBuddy(String fileName) throws IOException {
     	fileStorage = new Storage(fileName);
     	itemBuffer = new ArrayList<String>();
     	scanner = new Scanner(System.in);
+    	msgCentre = new MessageCentre(fileName);
+    	output = new BufferedWriter(new FileWriter(fileName));
     	
     	readToBuffer(fileStorage.getFile());
-    	
-    	msgCentre = new MessageCentre(fileName);
-    	msgCentre.welcome();
     }
-    
     
     private void readToBuffer(File file) {
     	String line;
@@ -98,14 +97,6 @@ public class TextBuddy {
         } 
     }
     
-    private String getInput() {
-    	return this.scanner.nextLine();
-    }
-    
-    private boolean hasNextLine() {
-    	return this.scanner.hasNextLine();
-    }
-    
     private void executeCommand(String[] action) {
 		COMMANDS cmd = matchCmd(action[0]);
 		String param = action[1];
@@ -113,35 +104,105 @@ public class TextBuddy {
 		switch(cmd) {
 	        case ADD:
 	            commandAdd(param);
-	            return;
+	            break;
 	        case DELETE:
 	            commandDelete(param);
-	            return;
+	            break;
 	        case DISPLAY:
 	            commandDisplay();
-	            return;
+	            break;
 	        case CLEAR:
 	            commandClear();
-	            return;
-	        case SORT:
-	            commandSort();
-	            return;
-	        case SEARCH:
-	            commandSearch(param);
-	            return;
+	            break;
+//	        case SORT:
+//	            commandSort();
+//	            break;
+//	        case SEARCH:
+//	            commandSearch(param);
+//	            break;
 	        default:
 	            // TODO: display error message
 		}
+		writeToFile();
+	}
+    
+    // flush from buffer into file
+    private void writeToFile() {
+        try {
+            for (String line : itemBuffer) {
+                output.write(line + "\n");
+            }
+//            output.close();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+    }
+
+	private void commandDisplay() {
+		if (itemBuffer.size() == 0) {
+			msgCentre.emptyList();
+			return;
+		} else {
+			for (int i = 0; i < itemBuffer.size(); i++) {
+				int index = i + 1;
+				String item = itemBuffer.get(i);
+				msgCentre.list(index, item);
+			}
+		}
+	}
+
+	private void commandClear() {
+		int size = itemBuffer.size();
+		for (int i = 0; i < size; i++) {
+			deleteFromBuffer(0);
+		}
+		msgCentre.clear();
+	}
+
+	private void commandDelete(String index) {
+		String item = itemBuffer.get(Integer.parseInt(index) - 1);
+		deleteFromBuffer(index);
+		msgCentre.delete(item);
+	}
+
+	private void deleteFromBuffer(String index) {
+		deleteFromBuffer(Integer.parseInt(index) - 1);
+	}
+	
+	private void deleteFromBuffer(int index) {
+		itemBuffer.remove(index);
+	}
+
+	private void commandAdd(String param) {
+		addToBuffer(param);
+		msgCentre.add(param);
+	}
+	
+	private void addToBuffer(String item) {
+		itemBuffer.add(item);
+	}
+
+	private boolean hasNextLine() {
+		return this.scanner.hasNextLine();
+	}
+
+	private String getInput() {
+		return this.scanner.nextLine();
 	}
 
 	public static void main(String[] args) {
-    	TextBuddy tb = new TextBuddy(args[0]);
-
-        do {
-        	tb.msgCentre.ask();
-            Parser p = new Parser(tb.getInput());
-            tb.executeCommand(p.getAction());
-        } while(tb.hasNextLine());
+//		String fileName = args[0];
+		try {
+			TextBuddy tb = new TextBuddy("output.txt");
+			
+			do {
+				tb.msgCentre.ask();
+				Parser p = new Parser(tb.getInput());
+				tb.executeCommand(p.getAction());
+			} while(tb.hasNextLine());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
 }
