@@ -6,7 +6,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	_StorageFiles.class,
 	_Parser.class,
-	_Sort.class
+	_Sort.class,
+	_Search.class
 })
 
 public class TestSuite {
