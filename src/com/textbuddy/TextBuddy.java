@@ -42,10 +42,11 @@ public class TextBuddy {
     private final String COMMAND_DISPLAY = "display";
     private final String COMMAND_CLEAR   = "clear";
     private final String COMMAND_SORT    = "sort";
-    private final String COMMAND_SEARCH  = "search";    
+    private final String COMMAND_SEARCH  = "search";  
+    private final String COMMAND_EXIT  = "exit";  
     
     private enum COMMANDS {
-    	ADD, DELETE, DISPLAY, CLEAR, SORT, SEARCH, INVALID
+    	ADD, DELETE, DISPLAY, CLEAR, SORT, SEARCH, EXIT, INVALID
     }
     
     private Scanner scanner;
@@ -54,89 +55,80 @@ public class TextBuddy {
     private ArrayList<String> itemBuffer;
     private MessageCentre msgCentre;
     
-    public TextBuddy(String fileName) throws IOException {
+    public TextBuddy(String fileName) {
     	fileStorage = new Storage(fileName);
     	itemBuffer = new ArrayList<String>();
     	scanner = new Scanner(System.in);
     	msgCentre = new MessageCentre(fileName);
-    	output = new BufferedWriter(new FileWriter(fileName));
+    	try {
+    		output = new BufferedWriter(new FileWriter(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     	
     	readToBuffer(fileStorage.getFile());
     }
     
-    private void readToBuffer(File file) {
-    	String line;
-    	try {
-    		BufferedReader br = new BufferedReader(new FileReader(file));
-			while((line = br.readLine()) != null) {
-				itemBuffer.add(line);
+    public void executeCommand(String[] action) {
+			COMMANDS cmd = matchCmd(action[0]);
+			String param = action[1];
+			
+			switch(cmd) {
+		        case ADD:
+		            commandAdd(param);
+		            break;
+		        case DELETE:
+		            commandDelete(param);
+		            break;
+		        case DISPLAY:
+		            commandDisplay();
+		            break;
+		        case CLEAR:
+		            commandClear();
+		            break;
+	//	        case SORT:
+	//	            commandSort();
+	//	            break;
+	//	        case SEARCH:
+	//	            commandSearch(param);
+	//	            break;
+		        case EXIT:
+		        	commandExit();
+		        	break;
+		        default:
+		            // TODO: display error message
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			writeToFile();
 		}
+
+    // exit cleanly
+	private void commandExit() {
+		scanner.close();
+//		output.close();
+		fileStorage = null;
+    	itemBuffer = null;
+    	msgCentre = null;
+    	System.exit(0);
 	}
 
 	private COMMANDS matchCmd(String cmd) {
-        switch(cmd.toLowerCase()) {
-            case COMMAND_ADD:
-                return COMMANDS.ADD;
-            case COMMAND_DELETE:
-                return COMMANDS.DELETE;
-            case COMMAND_DISPLAY:
-                return COMMANDS.DISPLAY;
-            case COMMAND_CLEAR:
-                return COMMANDS.CLEAR;
-            case COMMAND_SORT:
-                return COMMANDS.SORT;
-            case COMMAND_SEARCH:
-                return COMMANDS.SEARCH;
-            default:
-            	return COMMANDS.INVALID;
-        } 
-    }
-    
-    private void executeCommand(String[] action) {
-		COMMANDS cmd = matchCmd(action[0]);
-		String param = action[1];
-		
-		switch(cmd) {
-	        case ADD:
-	            commandAdd(param);
-	            break;
-	        case DELETE:
-	            commandDelete(param);
-	            break;
-	        case DISPLAY:
-	            commandDisplay();
-	            break;
-	        case CLEAR:
-	            commandClear();
-	            break;
-//	        case SORT:
-//	            commandSort();
-//	            break;
-//	        case SEARCH:
-//	            commandSearch(param);
-//	            break;
+	    switch(cmd.toLowerCase()) {
+	        case COMMAND_ADD:
+	            return COMMANDS.ADD;
+	        case COMMAND_DELETE:
+	            return COMMANDS.DELETE;
+	        case COMMAND_DISPLAY:
+	            return COMMANDS.DISPLAY;
+	        case COMMAND_CLEAR:
+	            return COMMANDS.CLEAR;
+	        case COMMAND_SORT:
+	            return COMMANDS.SORT;
+	        case COMMAND_SEARCH:
+	            return COMMANDS.SEARCH;
 	        default:
-	            // TODO: display error message
-		}
-		writeToFile();
+	        	return COMMANDS.INVALID;
+	    } 
 	}
-    
-    // flush from buffer into file
-    private void writeToFile() {
-        try {
-            for (String line : itemBuffer) {
-                output.write(line + "\n");
-            }
-//            output.close();
-        } catch (IOException e) {
-        	e.printStackTrace();
-        }
-    }
 
 	private void commandDisplay() {
 		if (itemBuffer.size() == 0) {
@@ -165,6 +157,29 @@ public class TextBuddy {
 		msgCentre.delete(item);
 	}
 
+	private void commandAdd(String param) {
+		addToBuffer(param);
+		msgCentre.add(param);
+	}
+
+	private void readToBuffer(File file) {
+		String line;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			while((line = br.readLine()) != null) {
+				itemBuffer.add(line);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void addToBuffer(String item) {
+		itemBuffer.add(item);
+	}
+
 	private void deleteFromBuffer(String index) {
 		deleteFromBuffer(Integer.parseInt(index) - 1);
 	}
@@ -173,14 +188,17 @@ public class TextBuddy {
 		itemBuffer.remove(index);
 	}
 
-	private void commandAdd(String param) {
-		addToBuffer(param);
-		msgCentre.add(param);
-	}
-	
-	private void addToBuffer(String item) {
-		itemBuffer.add(item);
-	}
+	// flush from buffer into file
+	    private void writeToFile() {
+	        try {
+	            for (String line : itemBuffer) {
+	                output.write(line + "\n");
+	            }
+	//            output.close();
+	        } catch (IOException e) {
+	        	e.printStackTrace();
+	        }
+	    }
 
 	private boolean hasNextLine() {
 		return this.scanner.hasNextLine();
