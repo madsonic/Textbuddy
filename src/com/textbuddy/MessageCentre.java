@@ -17,8 +17,9 @@ public class MessageCentre {
     	this.fileName = fileName;
     }
     
+    // 0 based index
     public void list(int index, String s) {
-    	String i = Integer.toString(index);
+    	String i = Integer.toString(index + 1);
     	String[] arr = {i, s};
     	show(STATEMENT_ENUM, arr);
     }

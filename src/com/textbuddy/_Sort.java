@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class _Sort {
-	Logic tb;
+	private Logic tb;
 	
 	@Before
 	public void setUp() {

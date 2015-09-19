@@ -43,7 +43,7 @@ public class Logic {
     private final String COMMAND_CLEAR   = "clear";
     private final String COMMAND_SORT    = "sort";
     private final String COMMAND_SEARCH  = "search";  
-    private final String COMMAND_EXIT  = "exit";  
+    private final String COMMAND_EXIT    = "exit";  
     
     private enum COMMANDS {
     	ADD, DELETE, DISPLAY, CLEAR, SORT, SEARCH, EXIT, INVALID
@@ -90,25 +90,20 @@ public class Logic {
 		        case SORT:
 		            commandSort();
 		            break;
-	//	        case SEARCH:
-	//	            commandSearch(param);
-	//	            break;
+		        case SEARCH:
+		            commandSearch(param);
+		            break;
 		        case EXIT:
 		        	commandExit();
 		        	break;
 		        default:
-		        	System.out.println("unknown cmd" + cmd);
+//		        	throw new Error("Invalid command");
 		            // TODO: display error message
 			}
 			writeToFile();
 		}
 
-    private void commandSort() {
-		Collections.sort(itemBuffer, String.CASE_INSENSITIVE_ORDER);
-	}
-
-	private COMMANDS matchCmd(String cmd) {
-    	System.out.println(cmd);
+    private COMMANDS matchCmd(String cmd) {
 	    switch(cmd.toLowerCase()) {
 	        case COMMAND_ADD:
 	            return COMMANDS.ADD;
@@ -125,6 +120,26 @@ public class Logic {
 	        default:
 	        	return COMMANDS.INVALID;
 	    } 
+	}
+
+	private void commandSearch(String searchTerm) {
+    	boolean noResult = true;
+
+    	for (int i = 0; i < itemBuffer.size(); i++) {
+    		String item = itemBuffer.get(i);
+
+    		if (item.contains(searchTerm)) {
+    			msgCentre.list(i, item);
+    			noResult = false;
+    		}
+    	}
+    	if (noResult) {
+    		msgCentre.emptyList();
+    	}
+	}
+
+	private void commandSort() {
+		Collections.sort(itemBuffer, String.CASE_INSENSITIVE_ORDER);
 	}
 
 	private void commandDisplay() {
