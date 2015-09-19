@@ -36,7 +36,7 @@ import java.util.Scanner;
  * search
  * looks for match in task description
  */
-public class TextBuddy {
+public class Logic {
     private final String COMMAND_ADD     = "add";
     private final String COMMAND_DELETE  = "delete";
     private final String COMMAND_DISPLAY = "display";
@@ -53,9 +53,10 @@ public class TextBuddy {
     private BufferedWriter output;
     private Storage fileStorage;
     private ArrayList<String> itemBuffer;
-    private MessageCentre msgCentre;
     
-    public TextBuddy(String fileName) {
+    public MessageCentre msgCentre;
+    
+    public Logic(String fileName) {
     	fileStorage = new Storage(fileName);
     	itemBuffer = new ArrayList<String>();
     	scanner = new Scanner(System.in);
@@ -86,9 +87,9 @@ public class TextBuddy {
 		        case CLEAR:
 		            commandClear();
 		            break;
-	//	        case SORT:
-	//	            commandSort();
-	//	            break;
+		        case SORT:
+		            commandSort();
+		            break;
 	//	        case SEARCH:
 	//	            commandSearch(param);
 	//	            break;
@@ -96,22 +97,18 @@ public class TextBuddy {
 		        	commandExit();
 		        	break;
 		        default:
+		        	System.out.println("unknown cmd" + cmd);
 		            // TODO: display error message
 			}
 			writeToFile();
 		}
 
-    // exit cleanly
-	private void commandExit() {
-		scanner.close();
-//		output.close();
-		fileStorage = null;
-    	itemBuffer = null;
-    	msgCentre = null;
-    	System.exit(0);
+    private void commandSort() {
+		Collections.sort(itemBuffer, String.CASE_INSENSITIVE_ORDER);
 	}
 
 	private COMMANDS matchCmd(String cmd) {
+    	System.out.println(cmd);
 	    switch(cmd.toLowerCase()) {
 	        case COMMAND_ADD:
 	            return COMMANDS.ADD;
@@ -162,6 +159,16 @@ public class TextBuddy {
 		msgCentre.add(param);
 	}
 
+	// exit cleanly
+		private void commandExit() {
+			scanner.close();
+	//		output.close();
+			fileStorage = null;
+	    	itemBuffer = null;
+	    	msgCentre = null;
+	    	System.exit(0);
+		}
+
 	private void readToBuffer(File file) {
 		String line;
 		try {
@@ -200,27 +207,16 @@ public class TextBuddy {
 	        }
 	    }
 
-	private boolean hasNextLine() {
+	public boolean hasNextLine() {
 		return this.scanner.hasNextLine();
 	}
 
-	private String getInput() {
+	public String getInput() {
 		return this.scanner.nextLine();
 	}
-
-	public static void main(String[] args) {
-//		String fileName = args[0];
-		try {
-			TextBuddy tb = new TextBuddy("output.txt");
-			
-			do {
-				tb.msgCentre.ask();
-				Parser p = new Parser(tb.getInput());
-				tb.executeCommand(p.getAction());
-			} while(tb.hasNextLine());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
-
+	
+	// getter to use for unit test case
+	public ArrayList<String> getBuffer() {
+		return new ArrayList<String>(itemBuffer);
+	}
 }
