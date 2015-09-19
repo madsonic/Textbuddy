@@ -27,6 +27,12 @@ public class _Search {
 		file.delete();
 		System.setOut(null);
 	}
+	
+	@Test
+	public void search_NoMatch_ShouldReturnMessage() {
+		tb.executeCommand(new Parser("search blah").getAction());
+		assertEquals("No result\n", outContent.toString());
+	}
 
 	@Test
 	public void search_ExactMatchFromOneItem_ShouldReturnMatch() {

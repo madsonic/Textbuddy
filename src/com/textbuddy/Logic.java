@@ -31,7 +31,7 @@ import java.util.Scanner;
  * Same as delete every index
  * 
  * sort
- * sort the items permanently
+ * sort the items non permanent
  * 
  * search
  * looks for match in task description
@@ -61,47 +61,44 @@ public class Logic {
     	itemBuffer = new ArrayList<String>();
     	scanner = new Scanner(System.in);
     	msgCentre = new MessageCentre(fileName);
+    	
     	try {
-    		output = new BufferedWriter(new FileWriter(fileName));
+    		output = new BufferedWriter(new FileWriter(fileName, false));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
-    	readToBuffer(fileStorage.getFile());
     }
     
     public void executeCommand(String[] action) {
-			COMMANDS cmd = matchCmd(action[0]);
-			String param = action[1];
-			
-			switch(cmd) {
-		        case ADD:
-		            commandAdd(param);
-		            break;
-		        case DELETE:
-		            commandDelete(param);
-		            break;
-		        case DISPLAY:
-		            commandDisplay();
-		            break;
-		        case CLEAR:
-		            commandClear();
-		            break;
-		        case SORT:
-		            commandSort();
-		            break;
-		        case SEARCH:
-		            commandSearch(param);
-		            break;
-		        case EXIT:
-		        	commandExit();
-		        	break;
-		        default:
-//		        	throw new Error("Invalid command");
-		            // TODO: display error message
-			}
-			writeToFile();
-		}
+    	COMMANDS cmd = matchCmd(action[0]);
+    	String param = action[1];
+
+    	switch(cmd) {
+    	case ADD:
+    		commandAdd(param);
+    		break;
+    	case DELETE:
+    		commandDelete(param);
+    		break;
+    	case DISPLAY:
+    		commandDisplay();
+    		break;
+    	case CLEAR:
+    		commandClear();
+    		break;
+    	case SORT:
+    		commandSort();
+    		break;
+    	case SEARCH:
+    		commandSearch(param);
+    		break;
+    	case EXIT:
+    		commandExit();
+    		break;
+    	default:
+    		msgCentre.unknownCmd();
+    	}
+    }
 
     private COMMANDS matchCmd(String cmd) {
 	    switch(cmd.toLowerCase()) {
@@ -118,6 +115,7 @@ public class Logic {
 	        case COMMAND_SEARCH:
 	            return COMMANDS.SEARCH;
 	        default:
+	        	System.out.println(cmd);
 	        	return COMMANDS.INVALID;
 	    } 
 	}
@@ -134,7 +132,7 @@ public class Logic {
     		}
     	}
     	if (noResult) {
-    		msgCentre.emptyList();
+    		msgCentre.emptyFind();
     	}
 	}
 
@@ -148,9 +146,8 @@ public class Logic {
 			return;
 		} else {
 			for (int i = 0; i < itemBuffer.size(); i++) {
-				int index = i + 1;
 				String item = itemBuffer.get(i);
-				msgCentre.list(index, item);
+				msgCentre.list(i, item);
 			}
 		}
 	}
@@ -166,36 +163,28 @@ public class Logic {
 	private void commandDelete(String index) {
 		String item = itemBuffer.get(Integer.parseInt(index) - 1);
 		deleteFromBuffer(index);
+		writeToFile();
 		msgCentre.delete(item);
 	}
 
 	private void commandAdd(String param) {
 		addToBuffer(param);
+		writeToFile();
 		msgCentre.add(param);
 	}
 
 	// exit cleanly
-		private void commandExit() {
-			scanner.close();
-	//		output.close();
-			fileStorage = null;
-	    	itemBuffer = null;
-	    	msgCentre = null;
-	    	System.exit(0);
-		}
-
-	private void readToBuffer(File file) {
-		String line;
+	private void commandExit() {
+		scanner.close();
+		fileStorage = null;
+		itemBuffer = null;
+		msgCentre = null;
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			while((line = br.readLine()) != null) {
-				itemBuffer.add(line);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			output.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 	private void addToBuffer(String item) {
@@ -211,16 +200,33 @@ public class Logic {
 	}
 
 	// flush from buffer into file
-	    private void writeToFile() {
-	        try {
-	            for (String line : itemBuffer) {
-	                output.write(line + "\n");
-	            }
-	//            output.close();
-	        } catch (IOException e) {
-	        	e.printStackTrace();
-	        }
-	    }
+	private void writeToFile2() {
+		try {
+			for (String line : itemBuffer) {
+				output.write(line + "\n");
+			}
+			output.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Write everything from itemBuffer to file
+	private void writeToFile() {
+		try {
+			output = getWriter(fileStorage.getFile());
+			for (String line : itemBuffer) {
+				output.write(line + "\n");
+			}
+			output.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+	
+	private BufferedWriter getWriter(File fileName) throws IOException {
+		return new BufferedWriter(new FileWriter(fileName));
+	}
 
 	public boolean hasNextLine() {
 		return this.scanner.hasNextLine();

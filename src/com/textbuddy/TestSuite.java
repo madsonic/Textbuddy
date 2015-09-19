@@ -10,6 +10,4 @@ import org.junit.runners.Suite;
 	_Search.class
 })
 
-public class TestSuite {
-	
-}
+public class TestSuite {}
